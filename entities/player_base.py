@@ -9,7 +9,7 @@ class PlayerBase:
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.radius = 40
+        self.radius = 80
         self.health = 200
         self.max_health = 200
         self.alive = True
@@ -71,67 +71,53 @@ class PlayerBase:
                 speed=1,
                 count=1
             )
-    
-    def draw(self, screen, camera_x=0, camera_y=0):
-        """Рисует базу"""
-        screen_x = self.x - camera_x
-        screen_y = self.y - camera_y
         
-        if screen_x < -100 or screen_x > WIDTH + 100 or \
-           screen_y < -100 or screen_y > HEIGHT + 100:
+    def draw(self, screen, camera):
+        """Рисует базу игрока с учётом зума"""
+        screen_x, screen_y = camera.world_to_screen(self.x, self.y)
+        scaled_radius = int(self.radius * camera.zoom)
+        
+        if screen_x < -200 or screen_x > WIDTH + 200 or \
+           screen_y < -200 or screen_y > HEIGHT + 200:
             return
         
-        # Свечение
-        glow_size = int(self.glow_radius * 2.5)
+        glow_size = int(self.glow_radius * 2.5 * camera.zoom)
         glow = pygame.Surface((glow_size * 2, glow_size * 2), pygame.SRCALPHA)
-        glow_color = (50, 200, 255, 30)
-        pygame.draw.circle(glow, glow_color, (glow_size, glow_size), glow_size)
+        pygame.draw.circle(glow, (50, 200, 255, 30), (glow_size, glow_size), glow_size)
         screen.blit(glow, (int(screen_x - glow_size), int(screen_y - glow_size)))
         
         # Внешнее кольцо
-        pygame.draw.circle(screen, (50, 150, 255), 
-                         (int(screen_x), int(screen_y)), 
-                         int(self.glow_radius), 2)
+        pygame.draw.circle(screen, (50, 150, 255), (int(screen_x), int(screen_y)),
+                         int(self.glow_radius * camera.zoom), 2)
         
-        # Внутреннее кольцо (пульсирующее)
-        inner_radius = int(self.radius * 0.8)
-        pygame.draw.circle(screen, (100, 200, 255), 
-                         (int(screen_x), int(screen_y)), 
-                         inner_radius, 2)
+        # Внутреннее кольцо
+        pygame.draw.circle(screen, (100, 200, 255), (int(screen_x), int(screen_y)),
+                         int(self.radius * 0.8 * camera.zoom), 2)
         
         # Центр
-        pygame.draw.circle(screen, (50, 150, 255), 
-                         (int(screen_x), int(screen_y)), 10)
+        pygame.draw.circle(screen, (50, 150, 255), (int(screen_x), int(screen_y)),
+                         max(3, int(10 * camera.zoom)))
         
         # Крест
-        size = 15
-        pygame.draw.line(screen, (150, 220, 255), 
-                       (int(screen_x - size), int(screen_y)), 
+        size = int(15 * camera.zoom)
+        pygame.draw.line(screen, (150, 220, 255),
+                       (int(screen_x - size), int(screen_y)),
                        (int(screen_x + size), int(screen_y)), 2)
-        pygame.draw.line(screen, (150, 220, 255), 
-                       (int(screen_x), int(screen_y - size)), 
+        pygame.draw.line(screen, (150, 220, 255),
+                       (int(screen_x), int(screen_y - size)),
                        (int(screen_x), int(screen_y + size)), 2)
         
-        # Полоса здоровья базы
-        bar_width = 50
-        bar_height = 4
+        # HP бар
+        bar_width = int(50 * camera.zoom)
+        bar_height = max(2, int(4 * camera.zoom))
         bar_x = screen_x - bar_width // 2
-        bar_y = screen_y - self.radius - 15
+        bar_y = screen_y - scaled_radius - 15
         health_percent = self.health / self.max_health
         
         pygame.draw.rect(screen, (50, 0, 0), (bar_x, bar_y, bar_width, bar_height))
-        pygame.draw.rect(screen, (0, 200, 50), 
-                        (bar_x, bar_y, bar_width * health_percent, bar_height))
+        pygame.draw.rect(screen, (0, 200, 50),
+                        (bar_x, bar_y, bar_width * health_percent, bar_height))    
         
-        # Метка
-        font = pygame.font.Font(None, 16)
-        label = font.render("BASE", True, (100, 200, 255))
-        label_rect = label.get_rect(center=(int(screen_x), int(screen_y + self.radius + 20)))
-        screen.blit(label, label_rect)
-        
-        # Расстояние до игрока (если далеко)
-        # (будет отображаться в HUD)
-    
     def is_near(self, x, y, radius=100):
         """Проверка, находится ли точка рядом с базой"""
         dx = x - self.x

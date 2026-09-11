@@ -224,7 +224,12 @@ class Game:
                 self.mouse_pressed = True
             if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
                 self.mouse_pressed = False
-        
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 4:  # Вверх — приближение
+                    self.camera.zoom_in()
+                elif event.button == 5:  # Вниз — отдаление
+                    self.camera.zoom_out()
+                    
         return None
         
     def _handle_cheats(self, event):
@@ -277,45 +282,36 @@ class Game:
     # ============================================================
 
     def _handle_controls(self):
-        """Обработка управления с клавиатуры и мыши"""
         keys = self.keys
-
-        # Проверяем топливо
         has_fuel = self.fuel_system.has_fuel()
         
-        # Поворот всегда работает
+        # Поворот
         if keys[pygame.K_LEFT] or keys[pygame.K_a]:
             self.ship.rotate_left()
         if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
             self.ship.rotate_right()
         
-        # Тяга только с топливом
+        # Тяга
         if (keys[pygame.K_UP] or keys[pygame.K_w]) and has_fuel:
             self.ship.thrust(True)
         else:
             self.ship.stop_thrust()
         
-        # Наводим оружие на мышь (только для турелей)
+        # ===== МИРОВЫЕ КООРДИНАТЫ МЫШКИ =====
         mouse_x, mouse_y = pygame.mouse.get_pos()
-        world_mouse_x = mouse_x + self.camera.x
-        world_mouse_y = mouse_y + self.camera.y
+        world_mouse_x, world_mouse_y = self.camera.screen_to_world(mouse_x, mouse_y)
+        
+        # Наводим турели на мышку
         self.ship.aim_weapons(world_mouse_x, world_mouse_y)
         
-        # Стрельба (без топлива)
+        # Стрельба
         if keys[pygame.K_SPACE]:
-            self.ship.shoot(self.bullets)
+            self.ship.shoot(self.bullets, world_mouse_x, world_mouse_y)
         
-        # Мышь
-        if self.config.get('controls.mouse_control', True):
-            mouse_x, mouse_y = pygame.mouse.get_pos()
-            world_mouse_x = mouse_x + self.camera.x
-            world_mouse_y = mouse_y + self.camera.y
-            self.ship.aim_at(world_mouse_x, world_mouse_y)
-            
-            if self.mouse_pressed:
-                self.ship.shoot(self.bullets)
+        if self.mouse_pressed:
+            self.ship.shoot(self.bullets, world_mouse_x, world_mouse_y)
         
-        # Варп (Shift) - только если есть топливо
+        # Варп
         if (keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]) and has_fuel:
             if self.fuel_system.activate_warp():
                 self.ship.set_warp(True)
@@ -323,19 +319,18 @@ class Game:
             if self.fuel_system.warp_active:
                 self.fuel_system.deactivate_warp()
                 self.ship.set_warp(False)
-
-        # Взаимодействие с аванпостом (E)
+        
+        # Взаимодействие с аванпостом
         if keys[pygame.K_e]:
             self._interact_with_nearby_outpost()
-            
-        # Открыть ангар (H) - только на базе
+        
+        # Ангар
         if keys[pygame.K_h]:
             if self.is_near_base():
                 self._open_hangar()
             else:
-                # Можно добавить сообщение в HUD
                 self.hangar_not_available = True
-                self.hangar_not_available_timer = 120  # 2 секунды
+                self.hangar_not_available_timer = 120
             
     # ============================================================
     #  ИГРОВЫЕ МЕХАНИКИ
@@ -599,16 +594,18 @@ class Game:
         enemy = Enemy(x, y, enemy_type, difficulty_multiplier)
         return enemy
         
-    def _spawn_enemy_with_base(self, x, y, enemy_type):
-        """Создаёт врага для базы с привязкой"""
+    def _spawn_enemy_with_base(self, x, y, enemy_type, base_color=None):
+        """Создаёт врага для базы с цветом"""
         enemy = self.enemy_manager.spawn_enemy(
             x, y, enemy_type,
-            self.difficulty_multiplier  # <-- ПЕРЕДАЁМ СЛОЖНОСТЬ
+            self.sprite_manager,
+            self.difficulty_multiplier,
+            base_color  # <-- ЦВЕТ ОТ БАЗЫ
         )
         if enemy:
             self.enemies.append(enemy)
         return enemy
-        
+    
     def _activate_bomb(self):
         """Активирует бомбу"""
         for enemy in self.enemies[:]:
@@ -757,9 +754,6 @@ class Game:
         else:
             self.starfield.set_warp(False)
             
-        # Обновление камеры
-        self.camera.update(self.ship.x, self.ship.y)
-
         # ===== ОБНОВЛЕНИЕ ЧАНКОВ =====
         old_chunk_x = int(self.ship.x // CHUNK_SIZE)
         old_chunk_y = int(self.ship.y // CHUNK_SIZE)
@@ -1812,95 +1806,65 @@ class Game:
     # ============================================================
 
     def draw(self):
-        """Отрисовка всего"""
+        """Отрисовка с зумом через камеру"""
+        
         self.screen.fill(BLACK)
-
-        camera_x = self.camera.x
-        camera_y = self.camera.y
-
-        # Звёзды
-        self.starfield.draw(self.screen, camera_x, camera_y)
-
-        # Астероиды
+        
+        # ===== 1. ОБНОВЛЯЕМ КАМЕРУ =====
+        self.camera.update(self.ship.x, self.ship.y)
+        
+        # ===== 2. РИСУЕМ ВСЁ ЧЕРЕЗ КАМЕРУ =====
+        
+        self.starfield.draw(self.screen, self.camera)
+        
         for asteroid in self.asteroids:
-            asteroid.draw(self.screen, camera_x, camera_y)
-
-        # Частицы
-        self.particles.draw(self.screen, camera_x, camera_y)
-
-        # Бонусы
-        self.powerups.draw(self.screen, camera_x, camera_y)
-
-        # Корабль
-        self.ship.draw(self.screen, camera_x, camera_y, self.particles)
-
-        # Пули
+            asteroid.draw(self.screen, self.camera)
+        
+        self.particles.draw(self.screen, self.camera)
+        self.powerups.draw(self.screen, self.camera)
+        
+        self.ship.draw(self.screen, self.camera, self.particles)
+        
         for bullet in self.bullets:
-            bullet.draw(self.screen, camera_x, camera_y)
+            bullet.draw(self.screen, self.camera)
         for bullet in self.enemy_bullets:
-            bullet.draw(self.screen, camera_x, camera_y)
-
-        # Базы
+            bullet.draw(self.screen, self.camera)
+        
         for base in self.enemy_bases:
-            base.draw(self.screen, camera_x, camera_y)
-
-        # База игрока
-        self.player_base.draw(self.screen, camera_x, camera_y)
-
-        # Враги
+            base.draw(self.screen, self.camera)
+        
+        self.player_base.draw(self.screen, self.camera)
+        
         for enemy in self.enemies:
-            enemy.draw(
-                self.screen,
-                camera_x,
-                camera_y,
-                self.ship.x,
-                self.ship.y
-            )
-
-        # Мини-карта
+            enemy.draw(self.screen, self.camera, self.ship.x, self.ship.y)
+        
+        for outpost in self.outposts:
+            outpost.draw(self.screen, self.camera)
+        
+        self.waypoint_manager.draw_in_game(self.screen, self.camera, self.ship.x, self.ship.y)
+        self.indicators.draw(self.screen)
+        
+        # ===== 3. HUD =====
         self.minimap.draw(
             self.screen,
-            self.ship.x,
-            self.ship.y,
+            self.ship.x, self.ship.y,
             self.enemies,
             self.powerups.powerups,
-            self.player_base.x,  # <-- БАЗА ИГРОКА
-            self.player_base.y,
+            self.player_base.x, self.player_base.y,
             self.camera,
             self.enemy_bases,
             self.outposts
         )
-
-        # Маркеры на игровом поле
-        self.waypoint_manager.draw_in_game(
-            self.screen,
-            self.ship.x,
-            self.ship.y,
-            camera_x,
-            camera_y
-        )
         
-        # Указатели направления
-        self.indicators.draw(self.screen)
-        
-        # Аванпосты
-        for outpost in self.outposts:
-            outpost.draw(self.screen, camera_x, camera_y)
-                # HP базы под прицелом
         self._draw_base_hp()
-
-        # HUD
         self._draw_hud()
-
-        # Game Over
+        
         if self.game_over:
             self._draw_game_over()
-
-        # ===== БОЛЬШАЯ КАРТА (поверх всего) =====
+        
         self.world_map.draw(
             self.screen,
-            self.ship.x,
-            self.ship.y,
+            self.ship.x, self.ship.y,
             self.enemies,
             self.enemy_bases,
             self.asteroids,
@@ -1908,34 +1872,18 @@ class Game:
             self.outposts
         )
         
-        # Ангар (поверх всего)
         if self.hangar is not None and self.hangar.active:
             self.hangar.draw()
-
-        # ===== ЭФФЕКТ ВАРПА (свечение по краям) =====
+        
+        # Варп
         if self.fuel_system.warp_active:
-            # Создаём свечение по краям экрана
             vignette = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
-            
-            # Центр прозрачный, края светятся
             for i in range(100, 0, -5):
                 alpha = int(10 * (1 - i / 100))
                 radius = i * 3
-                color = (100, 200, 255, alpha)
-                pygame.draw.circle(vignette, color, (WIDTH//2, HEIGHT//2), radius)
-            
+                pygame.draw.circle(vignette, (100, 200, 255, alpha), (WIDTH//2, HEIGHT//2), radius)
             self.screen.blit(vignette, (0, 0))
-            
-            # Эффект "разгона" — линии по краям
-            if pygame.time.get_ticks() % 100 < 50:
-                speed_lines = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
-                for i in range(0, WIDTH, 20):
-                    alpha = random.randint(20, 60)
-                    y_start = random.randint(0, HEIGHT)
-                    pygame.draw.line(speed_lines, (100, 200, 255, alpha), 
-                                   (i, y_start), (i, y_start - 50), 1)
-                self.screen.blit(speed_lines, (0, 0))
-                
+        
         pygame.display.flip()
         self.clock.tick(FPS)
 

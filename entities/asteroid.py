@@ -10,7 +10,7 @@ class Asteroid:
     def __init__(self, x, y, radius=None, health=None):
         self.x = x
         self.y = y
-        self.radius = radius or random.randint(20, 60)
+        self.radius = radius or random.randint(40, 120)
         self.health = health or self.radius // 10 + 2
         self.max_health = self.health
         
@@ -55,42 +55,42 @@ class Asteroid:
         self.y += self.speed_y
         self.rotation += self.rotation_speed
     
-    def draw(self, screen, camera_x=0, camera_y=0):
-        """Рисует астероид"""
-        screen_x = self.x - camera_x
-        screen_y = self.y - camera_y
+    def draw(self, screen, camera):
+        """Рисует астероид с учётом зума"""
+        screen_x, screen_y = camera.world_to_screen(self.x, self.y)
+        scaled_radius = self.radius * camera.zoom
         
-        if screen_x < -100 or screen_x > WIDTH + 100 or \
-           screen_y < -100 or screen_y > HEIGHT + 100:
+        if screen_x < -scaled_radius - 50 or screen_x > WIDTH + scaled_radius + 50 or \
+           screen_y < -scaled_radius - 50 or screen_y > HEIGHT + scaled_radius + 50:
             return
         
-        # Повёрнутые вершины
+        # Повёрнутые вершины с учётом зума
         rot_rad = math.radians(self.rotation)
         cos_a = math.cos(rot_rad)
         sin_a = math.sin(rot_rad)
         
         rotated = []
         for vx, vy in self.vertices:
-            rx = vx * cos_a - vy * sin_a
-            ry = vx * sin_a + vy * cos_a
+            rx = (vx * cos_a - vy * sin_a) * camera.zoom
+            ry = (vx * sin_a + vy * cos_a) * camera.zoom
             rotated.append((screen_x + rx, screen_y + ry))
         
-        # Рисуем астероид
+        # Рисуем
         pygame.draw.polygon(screen, self.color, rotated)
         pygame.draw.polygon(screen, (50, 50, 50), rotated, 1)
         
-        # Полоса здоровья (только если больше 1)
+        # Полоса здоровья
         if self.max_health > 1:
-            bar_width = 30
-            bar_height = 3
+            bar_width = int(30 * camera.zoom)
+            bar_height = max(2, int(3 * camera.zoom))
             bar_x = screen_x - bar_width // 2
-            bar_y = screen_y - self.radius - 8
+            bar_y = screen_y - scaled_radius - 8 * camera.zoom
             health_percent = self.health / self.max_health
             
             pygame.draw.rect(screen, (50, 0, 0), (bar_x, bar_y, bar_width, bar_height))
-            pygame.draw.rect(screen, (200, 200, 50), 
-                           (bar_x, bar_y, bar_width * health_percent, bar_height))
-    
+            pygame.draw.rect(screen, (200, 200, 50),
+                            (bar_x, bar_y, bar_width * health_percent, bar_height))
+     
     def take_damage(self, damage=1):
         """Получение урона"""
         self.health -= damage

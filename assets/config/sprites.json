@@ -1,153 +1,1984 @@
 {
   "ships": {
-    "player_base": {
-      "name": "Базовый корабль",
-      "sprite": "ships/player_base.png",
-      "size": [61, 61],
-      "pivot": [30, 30],
-      "slots": {
-        "weapon_1": {"x": 0, "y": -28, "type": "weapon"},
-        "engine": {"x": 0, "y": 28, "type": "engine"},
-        "shield": {"x": 0, "y": 0, "type": "shield"}
-      },
+    "blade": {
+      "size": [
+        128,
+        128
+      ],
+      "pivot": [
+        64,
+        64
+      ],
+      "x": 0,
+      "y": 0,
+      "slots": [
+        {
+          "type": "weapon",
+          "x": 14.5,
+          "y": -39.0,
+          "z": -1.5
+        },
+        {
+          "type": "weapon",
+          "x": 13.5,
+          "y": 40.0,
+          "z": 1.5
+        },
+        {
+          "type": "engine",
+          "x": -54.5,
+          "y": 0.0,
+          "z": 0.5
+        },
+        {
+          "type": "shield",
+          "x": 0,
+          "y": 0,
+          "z": 0.5
+        }
+      ],
+      "price": 220,
+      "folder": "ships/blade/",
       "stats": {
-        "hp": 100,
-        "speed": 1.0
-      },
-      "price": 0
+        "hp": 45,
+        "speed": 2.0
+      }
     },
-    "hull_heavy": {
-      "name": "Тяжёлый корпус",
-      "sprite": "ships/hull_heavy.png",
-      "size": [101, 60],
-      "pivot": [50, 30],
-      "slots": {
-        "weapon_1": {"x": -20, "y": -32, "type": "weapon"},
-        "weapon_2": {"x": 20, "y": -32, "type": "weapon"},
-        "weapon_3": {"x": 0, "y": -36, "type": "weapon"},
-        "engine": {"x": 0, "y": 36, "type": "engine"},
-        "shield": {"x": 0, "y": 0, "type": "shield"}
-      },
+    "gambit": {
+      "size": [
+        166,
+        166
+      ],
+      "pivot": [
+        83,
+        83
+      ],
+      "x": 0,
+      "y": 0,
+      "slots": [
+        {
+          "type": "engine",
+          "x": -73.5,
+          "y": 0.0,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": 30.5,
+          "y": -35.5,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": 30.0,
+          "y": 39.0,
+          "z": 0.5
+        },
+        {
+          "type": "shield",
+          "x": 0,
+          "y": 0,
+          "z": 0.5
+        }
+      ],
+      "price": 340,
+      "folder": "ships/gambit/",
+      "stats": {
+        "hp": 75,
+        "speed": 1.7
+      }
+    },
+    "phantom": {
+      "size": [
+        140,
+        140
+      ],
+      "pivot": [
+        70,
+        70
+      ],
+      "x": 0,
+      "y": 0,
+      "slots": [
+        {
+          "type": "weapon",
+          "x": 34.5,
+          "y": -0.5,
+          "z": 0.5
+        },
+        {
+          "type": "engine",
+          "x": -61.0,
+          "y": 0.0,
+          "z": 0.5
+        },
+        {
+          "type": "shield",
+          "x": 0,
+          "y": 0,
+          "z": 0.5
+        }
+      ],
+      "price": 260,
+      "folder": "ships/phantom/",
+      "stats": {
+        "hp": 55,
+        "speed": 1.9
+      }
+    },
+    "rogue": {
+      "size": [
+        166,
+        166
+      ],
+      "pivot": [
+        83,
+        83
+      ],
+      "x": 0,
+      "y": 0,
+      "slots": [
+        {
+          "type": "weapon",
+          "x": 33.5,
+          "y": -36.0,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": 32.5,
+          "y": 35.5,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": -14.0,
+          "y": -59.5,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": -14.5,
+          "y": 59.5,
+          "z": 0.5
+        },
+        {
+          "type": "engine",
+          "x": -62.5,
+          "y": -9.0,
+          "z": 0.5
+        },
+        {
+          "type": "engine",
+          "x": -62.5,
+          "y": 8.5,
+          "z": 0.5
+        },
+        {
+          "type": "shield",
+          "x": 0,
+          "y": 0,
+          "z": 0.5
+        }
+      ],
+      "price": 360,
+      "folder": "ships/rogue/",
+      "stats": {
+        "hp": 80,
+        "speed": 1.6
+      }
+    },
+    "shadow": {
+      "size": [
+        140,
+        140
+      ],
+      "pivot": [
+        70,
+        70
+      ],
+      "x": 0,
+      "y": 0,
+      "slots": [
+        {
+          "type": "weapon",
+          "x": -31.0,
+          "y": -29.5,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": -31.0,
+          "y": 29.5,
+          "z": 0.5
+        },
+        {
+          "type": "engine",
+          "x": -54.5,
+          "y": 0.0,
+          "z": 0.5
+        },
+        {
+          "type": "shield",
+          "x": 0,
+          "y": 0,
+          "z": 0.5
+        }
+      ],
+      "price": 240,
+      "folder": "ships/shadow/",
+      "stats": {
+        "hp": 50,
+        "speed": 1.95
+      }
+    },
+    "bastion": {
+      "size": [
+        268,
+        268
+      ],
+      "pivot": [
+        134,
+        134
+      ],
+      "x": 0,
+      "y": 0,
+      "slots": [
+        {
+          "type": "weapon",
+          "x": -18.0,
+          "y": -76.5,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": -17.5,
+          "y": 77.0,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": -60.0,
+          "y": -100.0,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": -58.0,
+          "y": 98.0,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": 66.0,
+          "y": -34.5,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": 68.0,
+          "y": 35.5,
+          "z": 0.5
+        },
+        {
+          "type": "engine",
+          "x": -115.5,
+          "y": -0.5,
+          "z": 0.5
+        },
+        {
+          "type": "shield",
+          "x": 0,
+          "y": 0,
+          "z": 0.5
+        }
+      ],
+      "price": 950,
+      "folder": "ships/bastion/",
+      "stats": {
+        "hp": 210,
+        "speed": 0.75
+      }
+    },
+    "bulwark": {
+      "size": [
+        230,
+        230
+      ],
+      "pivot": [
+        115,
+        115
+      ],
+      "x": 0,
+      "y": 0,
+      "slots": [
+        {
+          "type": "weapon",
+          "x": 63.0,
+          "y": -32.5,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": 62.0,
+          "y": 33.5,
+          "z": 0.5
+        },
+        {
+          "type": "engine",
+          "x": -106.5,
+          "y": 0.5,
+          "z": 0.5
+        },
+        {
+          "type": "shield",
+          "x": 0,
+          "y": 0,
+          "z": 0.5
+        }
+      ],
+      "price": 700,
+      "folder": "ships/bulwark/",
+      "stats": {
+        "hp": 160,
+        "speed": 1.0
+      }
+    },
+    "citadel": {
+      "size": [
+        281,
+        281
+      ],
+      "pivot": [
+        140,
+        140
+      ],
+      "x": 0,
+      "y": 0,
+      "slots": [
+        {
+          "type": "weapon",
+          "x": 29.0,
+          "y": -21.5,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": 27.5,
+          "y": 22.0,
+          "z": 0.5
+        },
+        {
+          "type": "engine",
+          "x": -127.5,
+          "y": 0.5,
+          "z": 0.5
+        },
+        {
+          "type": "shield",
+          "x": 0,
+          "y": 0,
+          "z": 0.5
+        }
+      ],
+      "price": 1000,
+      "folder": "ships/citadel/",
+      "stats": {
+        "hp": 220,
+        "speed": 0.7
+      }
+    },
+    "fortress": {
+      "size": [
+        256,
+        256
+      ],
+      "pivot": [
+        128,
+        128
+      ],
+      "x": 0,
+      "y": 0,
+      "slots": [
+        {
+          "type": "engine",
+          "x": -117.5,
+          "y": -16.5,
+          "z": 0.5
+        },
+        {
+          "type": "engine",
+          "x": -117.5,
+          "y": 17.5,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": -6.5,
+          "y": -27.0,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": -6.0,
+          "y": 29.0,
+          "z": 0.5
+        },
+        {
+          "type": "shield",
+          "x": 0,
+          "y": 0,
+          "z": 0.5
+        }
+      ],
+      "price": 800,
+      "folder": "ships/fortress/",
       "stats": {
         "hp": 180,
-        "speed": 0.7
-      },
-      "price": 200
+        "speed": 0.9
+      }
     },
-    "hull_stealth": {
-      "name": "Стелс",
-      "sprite": "ships/hull_stealth.png",
-      "size": [61, 61],
-      "pivot": [30, 30],
-      "slots": {
-        "weapon_1": {"x": -20, "y": -32, "type": "weapon"},
-        "engine": {"x": 0, "y": 36, "type": "engine"},
-        "shield": {"x": 0, "y": 0, "type": "shield"}
-      },
+    "goliath": {
+      "size": [
+        294,
+        294
+      ],
+      "pivot": [
+        147,
+        147
+      ],
+      "x": 0,
+      "y": 0,
+      "slots": [
+        {
+          "type": "weapon",
+          "x": 134.0,
+          "y": 0.0,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": 12.0,
+          "y": -100.0,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": 12.5,
+          "y": 101.0,
+          "z": 0.5
+        },
+        {
+          "type": "engine",
+          "x": -114.0,
+          "y": -96.5,
+          "z": 0.5
+        },
+        {
+          "type": "engine",
+          "x": -117.5,
+          "y": 98.0,
+          "z": 0.5
+        },
+        {
+          "type": "shield",
+          "x": 0,
+          "y": 0,
+          "z": 0.5
+        }
+      ],
+      "price": 1100,
+      "folder": "ships/goliath/",
+      "stats": {
+        "hp": 230,
+        "speed": 0.65
+      }
+    },
+    "hammerhead": {
+      "size": [
+        217,
+        217
+      ],
+      "pivot": [
+        108,
+        108
+      ],
+      "x": 0,
+      "y": 0,
+      "slots": [
+        {
+          "type": "engine",
+          "x": -99.5,
+          "y": -15.0,
+          "z": 0.5
+        },
+        {
+          "type": "engine",
+          "x": -99.0,
+          "y": 18.0,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": 3.0,
+          "y": -32.5,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": 2.5,
+          "y": 33.0,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": 54.0,
+          "y": 0.0,
+          "z": 0.5
+        },
+        {
+          "type": "shield",
+          "x": 0,
+          "y": 0,
+          "z": 0.5
+        }
+      ],
+      "price": 600,
+      "folder": "ships/hammerhead/",
+      "stats": {
+        "hp": 130,
+        "speed": 1.15
+      }
+    },
+    "ironclad": {
+      "size": [
+        256,
+        256
+      ],
+      "pivot": [
+        128,
+        128
+      ],
+      "x": 0,
+      "y": 0,
+      "slots": [
+        {
+          "type": "weapon",
+          "x": 98.5,
+          "y": -69.5,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": 97.5,
+          "y": 68.5,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": 107.5,
+          "y": -1.0,
+          "z": 0.5
+        },
+        {
+          "type": "engine",
+          "x": -16.5,
+          "y": -41.5,
+          "z": 0.5
+        },
+        {
+          "type": "engine",
+          "x": -17.5,
+          "y": 42.0,
+          "z": 0.5
+        },
+        {
+          "type": "shield",
+          "x": 0,
+          "y": 0,
+          "z": 0.5
+        }
+      ],
+      "price": 850,
+      "folder": "ships/ironclad/",
+      "stats": {
+        "hp": 190,
+        "speed": 0.85
+      }
+    },
+    "leviathan": {
+      "size": [
+        307,
+        307
+      ],
+      "pivot": [
+        153,
+        153
+      ],
+      "x": 0,
+      "y": 0,
+      "slots": [
+        {
+          "type": "weapon",
+          "x": -85.0,
+          "y": -63.5,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": -84.0,
+          "y": 64.5,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": -29.0,
+          "y": -45.0,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": -29.0,
+          "y": 45.5,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": 40.5,
+          "y": 0.5,
+          "z": 0.5
+        },
+        {
+          "type": "engine",
+          "x": -140.0,
+          "y": -15.5,
+          "z": 0.5
+        },
+        {
+          "type": "engine",
+          "x": -140.5,
+          "y": 16.0,
+          "z": 0.5
+        },
+        {
+          "type": "shield",
+          "x": 0,
+          "y": 0,
+          "z": 0.5
+        }
+      ],
+      "price": 1200,
+      "folder": "ships/leviathan/",
+      "stats": {
+        "hp": 250,
+        "speed": 0.6
+      }
+    },
+    "marauder": {
+      "size": [
+        230,
+        230
+      ],
+      "pivot": [
+        115,
+        115
+      ],
+      "x": 0,
+      "y": 0,
+      "slots": [
+        {
+          "type": "weapon",
+          "x": 15.0,
+          "y": -32.5,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": 16.0,
+          "y": 35.0,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": 73.5,
+          "y": -0.5,
+          "z": 0.5
+        },
+        {
+          "type": "engine",
+          "x": -25.0,
+          "y": -35.5,
+          "z": 0.5
+        },
+        {
+          "type": "engine",
+          "x": -24.0,
+          "y": 34.0,
+          "z": 0.5
+        },
+        {
+          "type": "shield",
+          "x": 0,
+          "y": 0,
+          "z": 0.5
+        }
+      ],
+      "price": 650,
+      "folder": "ships/marauder/",
+      "stats": {
+        "hp": 150,
+        "speed": 1.05
+      }
+    },
+    "monolith": {
+      "size": [
+        243,
+        243
+      ],
+      "pivot": [
+        121,
+        121
+      ],
+      "x": 0,
+      "y": 0,
+      "slots": [
+        {
+          "type": "weapon",
+          "x": -60.0,
+          "y": -65.5,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": -61.0,
+          "y": 66.5,
+          "z": 0.5
+        },
+        {
+          "type": "engine",
+          "x": -93.0,
+          "y": -35.5,
+          "z": 0.5
+        },
+        {
+          "type": "engine",
+          "x": -93.5,
+          "y": 34.5,
+          "z": 0.5
+        },
+        {
+          "type": "shield",
+          "x": 0,
+          "y": 0,
+          "z": 0.5
+        }
+      ],
+      "price": 750,
+      "folder": "ships/monolith/",
+      "stats": {
+        "hp": 170,
+        "speed": 0.95
+      }
+    },
+    "paladin": {
+      "size": [
+        243,
+        243
+      ],
+      "pivot": [
+        121,
+        121
+      ],
+      "x": 0,
+      "y": 0,
+      "slots": [
+        {
+          "type": "engine",
+          "x": -103.0,
+          "y": -68.5,
+          "z": 0.5
+        },
+        {
+          "type": "engine",
+          "x": -101.5,
+          "y": 67.0,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": 50.0,
+          "y": 0.5,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": 60.5,
+          "y": 69.5,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": 59.5,
+          "y": -67.0,
+          "z": 0.5
+        },
+        {
+          "type": "shield",
+          "x": 0,
+          "y": 0,
+          "z": 0.5
+        }
+      ],
+      "price": 780,
+      "folder": "ships/paladin/",
+      "stats": {
+        "hp": 175,
+        "speed": 0.9
+      }
+    },
+    "phoenix": {
+      "size": [
+        179,
+        179
+      ],
+      "pivot": [
+        89,
+        89
+      ],
+      "x": 0,
+      "y": 0,
+      "slots": [
+        {
+          "type": "weapon",
+          "x": 48.5,
+          "y": 0.5,
+          "z": 0.5
+        },
+        {
+          "type": "engine",
+          "x": -78.0,
+          "y": 0.0,
+          "z": 0.5
+        },
+        {
+          "type": "shield",
+          "x": 0,
+          "y": 0,
+          "z": 0.5
+        }
+      ],
+      "price": 420,
+      "folder": "ships/phoenix/",
+      "stats": {
+        "hp": 95,
+        "speed": 1.5
+      }
+    },
+    "raven": {
+      "size": [
+        192,
+        192
+      ],
+      "pivot": [
+        96,
+        96
+      ],
+      "x": 0,
+      "y": 0,
+      "slots": [
+        {
+          "type": "weapon",
+          "x": 69.0,
+          "y": -41.5,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": 69.0,
+          "y": 40.5,
+          "z": 0.5
+        },
+        {
+          "type": "engine",
+          "x": -74.0,
+          "y": 0.0,
+          "z": 0.5
+        },
+        {
+          "type": "shield",
+          "x": 0,
+          "y": 0,
+          "z": 0.5
+        }
+      ],
+      "price": 500,
+      "folder": "ships/raven/",
+      "stats": {
+        "hp": 110,
+        "speed": 1.35
+      }
+    },
+    "saber": {
+      "size": [
+        204,
+        204
+      ],
+      "pivot": [
+        102,
+        102
+      ],
+      "x": 0,
+      "y": 0,
+      "slots": [
+        {
+          "type": "weapon",
+          "x": 54.0,
+          "y": -43.5,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": 53.5,
+          "y": 43.5,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": -41.0,
+          "y": 0.5,
+          "z": 0.5
+        },
+        {
+          "type": "engine",
+          "x": -63.5,
+          "y": -63.5,
+          "z": 0.5
+        },
+        {
+          "type": "engine",
+          "x": -62.0,
+          "y": 65.5,
+          "z": 0.5
+        },
+        {
+          "type": "engine",
+          "x": -85.5,
+          "y": 0.0,
+          "z": 0.5
+        },
+        {
+          "type": "shield",
+          "x": 0,
+          "y": 0,
+          "z": 0.5
+        }
+      ],
+      "price": 520,
+      "folder": "ships/saber/",
+      "stats": {
+        "hp": 115,
+        "speed": 1.3
+      }
+    },
+    "sentinel": {
+      "size": [
+        204,
+        204
+      ],
+      "pivot": [
+        102,
+        102
+      ],
+      "x": 0,
+      "y": 0,
+      "slots": [
+        {
+          "type": "engine",
+          "x": -89.5,
+          "y": -41.0,
+          "z": 0.5
+        },
+        {
+          "type": "engine",
+          "x": -89.5,
+          "y": 42.0,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": 46.5,
+          "y": -42.0,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": 46.0,
+          "y": 40.0,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": -34.5,
+          "y": -41.5,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": -34.5,
+          "y": 42.0,
+          "z": 0.5
+        },
+        {
+          "type": "shield",
+          "x": 0,
+          "y": 0,
+          "z": 0.5
+        }
+      ],
+      "price": 580,
+      "folder": "ships/sentinel/",
+      "stats": {
+        "hp": 125,
+        "speed": 1.2
+      }
+    },
+    "sparrow": {
+      "size": [
+        153,
+        153
+      ],
+      "pivot": [
+        76,
+        76
+      ],
+      "x": 0,
+      "y": 0,
+      "slots": [
+        {
+          "type": "weapon",
+          "x": 39.0,
+          "y": -42.5,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": 37.5,
+          "y": 45.5,
+          "z": 0.5
+        },
+        {
+          "type": "engine",
+          "x": -68.5,
+          "y": 1.0,
+          "z": 0.5
+        },
+        {
+          "type": "shield",
+          "x": 0,
+          "y": 0,
+          "z": 0.5
+        }
+      ],
+      "price": 300,
+      "folder": "ships/sparrow/",
+      "stats": {
+        "hp": 65,
+        "speed": 1.8
+      }
+    },
+    "stiletto": {
+      "size": [
+        153,
+        153
+      ],
+      "pivot": [
+        76,
+        76
+      ],
+      "x": 0,
+      "y": 0,
+      "slots": [
+        {
+          "type": "weapon",
+          "x": 53.0,
+          "y": -33.0,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": 54.0,
+          "y": 34.5,
+          "z": 0.5
+        },
+        {
+          "type": "engine",
+          "x": -54.5,
+          "y": -0.5,
+          "z": 0.5
+        },
+        {
+          "type": "shield",
+          "x": 0,
+          "y": 0,
+          "z": 0.5
+        }
+      ],
+      "price": 280,
+      "folder": "ships/stiletto/",
+      "stats": {
+        "hp": 60,
+        "speed": 1.85
+      }
+    },
+    "stormbringer": {
+      "size": [
+        192,
+        192
+      ],
+      "pivot": [
+        96,
+        96
+      ],
+      "x": 0,
+      "y": 0,
+      "slots": [
+        {
+          "type": "weapon",
+          "x": 1.0,
+          "y": -35.5,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": -1.5,
+          "y": 35.5,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": 73.0,
+          "y": 0.5,
+          "z": 0.5
+        },
+        {
+          "type": "engine",
+          "x": -55.0,
+          "y": -34.0,
+          "z": 0.5
+        },
+        {
+          "type": "engine",
+          "x": -55.0,
+          "y": 34.0,
+          "z": 0.5
+        },
+        {
+          "type": "shield",
+          "x": 0,
+          "y": 0,
+          "z": 0.5
+        }
+      ],
+      "price": 480,
+      "folder": "ships/stormbringer/",
+      "stats": {
+        "hp": 105,
+        "speed": 1.4
+      }
+    },
+    "swift": {
+      "size": [
+        128,
+        128
+      ],
+      "pivot": [
+        64,
+        64
+      ],
+      "x": 0,
+      "y": 0,
+      "slots": [
+        {
+          "type": "weapon",
+          "x": 1.0,
+          "y": -30.0,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": 0.0,
+          "y": 30.0,
+          "z": 0.5
+        },
+        {
+          "type": "engine",
+          "x": -52.5,
+          "y": 0.0,
+          "z": 0.5
+        },
+        {
+          "type": "shield",
+          "x": 0,
+          "y": 0,
+          "z": 0.5
+        }
+      ],
+      "price": 200,
+      "folder": "ships/swift/",
+      "stats": {
+        "hp": 40,
+        "speed": 2.1
+      }
+    },
+    "tempest": {
+      "size": [
+        204,
+        204
+      ],
+      "pivot": [
+        102,
+        102
+      ],
+      "x": 0,
+      "y": 0,
+      "slots": [
+        {
+          "type": "engine",
+          "x": -85.5,
+          "y": 0.5,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": 64.0,
+          "y": -34.0,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": 65.5,
+          "y": 35.5,
+          "z": 0.5
+        },
+        {
+          "type": "shield",
+          "x": 0,
+          "y": 0,
+          "z": 0.5
+        }
+      ],
+      "price": 550,
+      "folder": "ships/tempest/",
+      "stats": {
+        "hp": 120,
+        "speed": 1.25
+      }
+    },
+    "titan": {
+      "size": [
+        256,
+        256
+      ],
+      "pivot": [
+        128,
+        128
+      ],
+      "x": 0,
+      "y": 0,
+      "slots": [
+        {
+          "type": "weapon",
+          "x": 30.0,
+          "y": 0.0,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": -68.0,
+          "y": 0.5,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": 73.5,
+          "y": -27.5,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": 73.0,
+          "y": 27.5,
+          "z": 0.5
+        },
+        {
+          "type": "engine",
+          "x": -105.5,
+          "y": -0.5,
+          "z": 0.5
+        },
+        {
+          "type": "shield",
+          "x": 0,
+          "y": 0,
+          "z": 0.5
+        }
+      ],
+      "price": 900,
+      "folder": "ships/titan/",
+      "stats": {
+        "hp": 200,
+        "speed": 0.8
+      }
+    },
+    "vanguard": {
+      "size": [
+        179,
+        179
+      ],
+      "pivot": [
+        89,
+        89
+      ],
+      "x": 0,
+      "y": 0,
+      "slots": [
+        {
+          "type": "weapon",
+          "x": 13.5,
+          "y": -20.0,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": 13.0,
+          "y": 22.0,
+          "z": 0.5
+        },
+        {
+          "type": "engine",
+          "x": -78.5,
+          "y": 0.5,
+          "z": 0.5
+        },
+        {
+          "type": "shield",
+          "x": 0,
+          "y": 0,
+          "z": 0.5
+        }
+      ],
+      "price": 450,
+      "folder": "ships/vanguard/",
+      "stats": {
+        "hp": 100,
+        "speed": 1.45
+      }
+    },
+    "vindicator": {
+      "size": [
+        217,
+        217
+      ],
+      "pivot": [
+        108,
+        108
+      ],
+      "x": 0,
+      "y": 0,
+      "slots": [
+        {
+          "type": "weapon",
+          "x": 9.0,
+          "y": -48.5,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": 8.5,
+          "y": 49.5,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": 48.0,
+          "y": -0.5,
+          "z": 0.5
+        },
+        {
+          "type": "engine",
+          "x": -60.5,
+          "y": -50.0,
+          "z": 0.5
+        },
+        {
+          "type": "engine",
+          "x": -60.5,
+          "y": 50.5,
+          "z": 0.5
+        },
+        {
+          "type": "shield",
+          "x": 0,
+          "y": 0,
+          "z": 0.5
+        }
+      ],
+      "price": 620,
+      "folder": "ships/vindicator/",
+      "stats": {
+        "hp": 140,
+        "speed": 1.1
+      }
+    },
+    "viper": {
+      "size": [
+        153,
+        153
+      ],
+      "pivot": [
+        76,
+        76
+      ],
+      "x": 0,
+      "y": 0,
+      "slots": [
+        {
+          "type": "weapon",
+          "x": 62.5,
+          "y": 1.0,
+          "z": 0.5
+        },
+        {
+          "type": "engine",
+          "x": -44.0,
+          "y": -19.0,
+          "z": 0.5
+        },
+        {
+          "type": "engine",
+          "x": -43.5,
+          "y": 19.5,
+          "z": 0.5
+        },
+        {
+          "type": "shield",
+          "x": 0,
+          "y": 0,
+          "z": 0.5
+        }
+      ],
+      "price": 320,
+      "folder": "ships/viper/",
       "stats": {
         "hp": 70,
-        "speed": 1.4
-      },
-      "price": 150
-
+        "speed": 1.7
+      }
+    },
+    "whisper": {
+      "size": [
+        179,
+        179
+      ],
+      "pivot": [
+        89,
+        89
+      ],
+      "x": 0,
+      "y": 0,
+      "slots": [
+        {
+          "type": "weapon",
+          "x": 48.0,
+          "y": -21.5,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": 46.5,
+          "y": 23.0,
+          "z": 0.5
+        },
+        {
+          "type": "engine",
+          "x": -43.5,
+          "y": -35.5,
+          "z": 0.5
+        },
+        {
+          "type": "engine",
+          "x": -42.0,
+          "y": 35.5,
+          "z": 0.5
+        },
+        {
+          "type": "engine",
+          "x": -75.5,
+          "y": -0.5,
+          "z": 0.5
+        },
+        {
+          "type": "shield",
+          "x": 0,
+          "y": 0,
+          "z": 0.5
+        }
+      ],
+      "price": 380,
+      "folder": "ships/whisper/",
+      "stats": {
+        "hp": 85,
+        "speed": 1.6
+      }
     }
   },
-
   "weapons": {
-    "weapon_static": {
-      "name": "Базовая пушка",
-      "sprite": "weapons/weapon_static.png",
-      "size": [16, 16],
-      "pivot": [8, 12],
+    "dual_turret": {
+      "folder": "weapons/dual_turret/",
+      "size": [
+        40,
+        40
+      ],
+      "pivot": [
+        15,
+        20
+      ],
+      "x": 0,
+      "y": 0,
+      "slots": [],
+      "price": 300,
+      "type": "turret",
+      "stats": {
+        "damage": 16,
+        "fire_rate": 0.25
+      }
+    },
+    "blaster": {
+      "folder": "weapons/blaster/",
+      "size": [
+        32,
+        32
+      ],
+      "pivot": [
+        16,
+        16
+      ],
+      "x": 0,
+      "y": 0,
+      "slots": [],
+      "price": 50,
       "type": "static",
       "stats": {
         "damage": 10,
         "fire_rate": 0.3
-      },
-      "price": 50
+      }
     },
-    "weapon_plasma": {
-      "name": "Плазменная пушка",
-      "sprite": "weapons/weapon_plasma.png",
-      "size": [20, 20],
-      "pivot": [10, 14],
-      "type": "static",
-      "stats": {
-        "damage": 18,
-        "fire_rate": 0.2
-      },
-      "price": 150
-    },
-    "weapon_turret": {
-      "name": "Турель",
-      "sprite": "weapons/weapon_turret.png",
-      "size": [16, 16],
-      "pivot": [8, 12],
+    "heavy_turret": {
+      "folder": "weapons/heavy_turret/",
+      "size": [
+        48,
+        48
+      ],
+      "pivot": [
+        17,
+        24
+      ],
+      "x": 0,
+      "y": 0,
+      "slots": [],
+      "price": 250,
       "type": "turret",
       "stats": {
-        "damage": 8,
+        "damage": 20,
         "fire_rate": 0.4
-      },
-      "price": 80
-    }
-  },
-
-  "engines": {
-    "engine_small": {
-      "name": "Малый двигатель",
-      "sprite": "engines/engine_small.png",
-      "size": [16, 16],
-      "pivot": [8, 8],
-      "stats": {
-        "thrust": 1.0,
-        "fuel_consumption": 0.8
-      },
-      "price": 30
+      }
     },
-    "engine_large": {
-      "name": "Большой двигатель",
-      "sprite": "engines/engine_large.png",
-      "size": [20, 20],
-      "pivot": [10, 10],
+    "railgun": {
+      "folder": "weapons/railgun/",
+      "size": [
+        48,
+        48
+      ],
+      "pivot": [
+        24,
+        24
+      ],
+      "x": 0,
+      "y": 0,
+      "slots": [],
+      "price": 350,
+      "type": "static",
       "stats": {
-        "thrust": 1.8,
-        "fuel_consumption": 1.5
-      },
-      "price": 100
-    }
-  },
-
-  "shields": {
-    "shield_basic": {
-      "name": "Базовый щит",
-      "sprite": "shields/shield_basic.png",
-      "size": [24, 24],
-      "pivot": [12, 12],
-      "stats": {
-        "power": 50,
-        "regen": 1
-      },
-      "price": 40
+        "damage": 40,
+        "fire_rate": 0.75
+      }
     },
-    "shield_advanced": {
-      "name": "Улучшенный щит",
-      "sprite": "shields/shield_advanced.png",
-      "size": [28, 28],
-      "pivot": [14, 14],
+    "repeater": {
+      "folder": "weapons/repeater/",
+      "size": [
+        32,
+        32
+      ],
+      "pivot": [
+        16,
+        16
+      ],
+      "x": 0,
+      "y": 0,
+      "slots": [],
+      "price": 80,
+      "type": "static",
       "stats": {
-        "power": 100,
-        "regen": 2
-      },
-      "price": 120
+        "damage": 6,
+        "fire_rate": 0.15
+      }
+    },
+    "turret": {
+      "folder": "weapons/turret/",
+      "size": [
+        32,
+        32
+      ],
+      "pivot": [
+        13,
+        16
+      ],
+      "x": 0,
+      "y": 0,
+      "slots": [],
+      "price": 100,
+      "type": "turret",
+      "stats": {
+        "damage": 12,
+        "fire_rate": 0.3
+      }
     }
   },
-
-  "colors": {
-    "white": [255, 255, 255],
-    "red": [255, 50, 50],
-    "blue": [50, 150, 255],
-    "green": [50, 255, 50],
-    "gold": [255, 215, 0],
-    "purple": [200, 50, 255]
+  "enemies": {
+    "guardian": {
+      "size": [
+        96,
+        96
+      ],
+      "pivot": [
+        48,
+        48
+      ],
+      "x": 0,
+      "y": 0,
+      "slots": [
+        {
+          "type": "weapon",
+          "x": 14.5,
+          "y": -28.0,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": 15.5,
+          "y": 28.0,
+          "z": 0.5
+        },
+        {
+          "type": "engine",
+          "x": -36.5,
+          "y": -0.5,
+          "z": 0.5
+        },
+        {
+          "type": "shield",
+          "x": 0,
+          "y": 0,
+          "z": 0.5
+        }
+      ],
+      "price": 100,
+      "folder": "enemies/guardian/",
+      "stats": {
+        "hp": 5,
+        "speed": 2.0,
+        "behavior": "chase",
+        "score": 10,
+        "can_shoot": true,
+        "shoot_delay": 60,
+        "bullet_speed": 5,
+        "bullet_type": "forward"
+      }
+    },
+    "kamikaze": {
+      "size": [
+        56,
+        56
+      ],
+      "pivot": [
+        28,
+        28
+      ],
+      "x": 0,
+      "y": 0,
+      "slots": [
+        {
+          "type": "weapon",
+          "x": 21.0,
+          "y": 0.0,
+          "z": 0.5
+        },
+        {
+          "type": "engine",
+          "x": -20.0,
+          "y": 0.0,
+          "z": 0.5
+        },
+        {
+          "type": "shield",
+          "x": 0,
+          "y": 0,
+          "z": 0.5
+        }
+      ],
+      "price": 100,
+      "folder": "enemies/kamikaze/",
+      "stats": {
+        "hp": 1,
+        "speed": 4.5,
+        "behavior": "kamikaze",
+        "score": 10,
+        "can_shoot": true,
+        "shoot_delay": 60,
+        "bullet_speed": 5,
+        "bullet_type": "forward"
+      }
+    },
+    "scout": {
+      "size": [
+        64,
+        64
+      ],
+      "pivot": [
+        32,
+        32
+      ],
+      "x": 0,
+      "y": 0,
+      "slots": [
+        {
+          "type": "weapon",
+          "x": 19.0,
+          "y": 1.0,
+          "z": 0.5
+        },
+        {
+          "type": "engine",
+          "x": -23.0,
+          "y": 0.5,
+          "z": 0.5
+        },
+        {
+          "type": "shield",
+          "x": 0,
+          "y": 0,
+          "z": 0.5
+        }
+      ],
+      "price": 100,
+      "folder": "enemies/scout/",
+      "stats": {
+        "hp": 2,
+        "speed": 3.0,
+        "behavior": "chase",
+        "score": 10,
+        "can_shoot": true,
+        "shoot_delay": 60,
+        "bullet_speed": 5,
+        "bullet_type": "forward"
+      }
+    },
+    "sniper": {
+      "size": [
+        72,
+        72
+      ],
+      "pivot": [
+        36,
+        36
+      ],
+      "x": 0,
+      "y": 0,
+      "slots": [
+        {
+          "type": "weapon",
+          "x": 25.5,
+          "y": 0.0,
+          "z": 0.5
+        },
+        {
+          "type": "engine",
+          "x": -25.5,
+          "y": -0.5,
+          "z": 0.5
+        },
+        {
+          "type": "shield",
+          "x": 0,
+          "y": 0,
+          "z": 0.5
+        }
+      ],
+      "price": 100,
+      "folder": "enemies/sniper/",
+      "stats": {
+        "hp": 3,
+        "speed": 0.5,
+        "behavior": "stationary",
+        "score": 10,
+        "can_shoot": true,
+        "shoot_delay": 60,
+        "bullet_speed": 5,
+        "bullet_type": "forward"
+      }
+    },
+    "swarmer": {
+      "size": [
+        40,
+        40
+      ],
+      "pivot": [
+        20,
+        20
+      ],
+      "x": 0,
+      "y": 0,
+      "slots": [
+        {
+          "type": "weapon",
+          "x": 14.0,
+          "y": 0.25,
+          "z": 0.5
+        },
+        {
+          "type": "engine",
+          "x": -14.75,
+          "y": 0.0,
+          "z": 0.5
+        },
+        {
+          "type": "shield",
+          "x": 0,
+          "y": 0,
+          "z": 0.5
+        }
+      ],
+      "price": 100,
+      "folder": "enemies/swarmer/",
+      "stats": {
+        "hp": 1,
+        "speed": 5.0,
+        "behavior": "chase",
+        "score": 10,
+        "can_shoot": true,
+        "shoot_delay": 60,
+        "bullet_speed": 5,
+        "bullet_type": "forward"
+      }
+    },
+    "tank": {
+      "size": [
+        128,
+        128
+      ],
+      "pivot": [
+        64,
+        64
+      ],
+      "x": 0,
+      "y": 0,
+      "slots": [
+        {
+          "type": "weapon",
+          "x": 53.5,
+          "y": -22.75,
+          "z": 0.5
+        },
+        {
+          "type": "weapon",
+          "x": 52.5,
+          "y": 22.0,
+          "z": 0.5
+        },
+        {
+          "type": "engine",
+          "x": -56.25,
+          "y": 0.25,
+          "z": 0.5
+        },
+        {
+          "type": "shield",
+          "x": 0,
+          "y": 0,
+          "z": 0.5
+        }
+      ],
+      "price": 100,
+      "folder": "enemies/tank/",
+      "stats": {
+        "hp": 8,
+        "speed": 1.2,
+        "behavior": "chase",
+        "score": 10,
+        "can_shoot": true,
+        "shoot_delay": 60,
+        "bullet_speed": 5,
+        "bullet_type": "forward"
+      }
+    },
+    "turret": {
+      "size": [
+        80,
+        80
+      ],
+      "pivot": [
+        40,
+        40
+      ],
+      "x": 0,
+      "y": 0,
+      "slots": [
+        {
+          "type": "weapon",
+          "x": 22.75,
+          "y": 0.0,
+          "z": 0.5
+        },
+        {
+          "type": "engine",
+          "x": -36.5,
+          "y": -8.5,
+          "z": 0.5
+        },
+        {
+          "type": "engine",
+          "x": -36.25,
+          "y": 8.75,
+          "z": 0.5
+        },
+        {
+          "type": "shield",
+          "x": 0,
+          "y": 0,
+          "z": 0.5
+        }
+      ],
+      "price": 100,
+      "folder": "enemies/turret/",
+      "stats": {
+        "hp": 6,
+        "speed": 0.1,
+        "behavior": "stationary",
+        "score": 10,
+        "can_shoot": true,
+        "shoot_delay": 60,
+        "bullet_speed": 5,
+        "bullet_type": "target"
+      }
+    }
   }
 }

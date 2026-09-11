@@ -153,11 +153,64 @@ class WaypointManager:
         """Возвращает список с одним маркером или пустой список"""
         return [self.waypoint] if self.waypoint else []
     
-    def draw_in_game(self, screen, player_x, player_y, camera_x, camera_y):
-        """Рисует маркер в игре"""
-        if self.waypoint:
-            self.waypoint.draw_in_game(screen, player_x, player_y, camera_x, camera_y)
-    
+    def draw_in_game(self, screen, camera, player_x, player_y):
+        """Рисует маркер в игре с учётом зума"""
+        if not self.waypoint:
+            return
+        
+        wp = self.waypoint
+        screen_x, screen_y = camera.world_to_screen(wp.x, wp.y)
+        
+        if -20 < screen_x < WIDTH + 20 and -20 < screen_y < HEIGHT + 20:
+            size = int(12 * camera.zoom)
+            pygame.draw.circle(screen, wp.color, (int(screen_x), int(screen_y)), size, 2)
+            pygame.draw.line(screen, wp.color, 
+                           (screen_x - size * 0.7, screen_y), 
+                           (screen_x + size * 0.7, screen_y), 2)
+            pygame.draw.line(screen, wp.color, 
+                           (screen_x, screen_y - size * 0.7), 
+                           (screen_x, screen_y + size * 0.7), 2)
+        else:
+            # Стрелка на краю
+            dx = wp.x - player_x
+            dy = wp.y - player_y
+            angle = math.atan2(dy, dx)
+            
+            margin = 60
+            cx = WIDTH // 2
+            cy = HEIGHT // 2
+            
+            cos_a = math.cos(angle)
+            sin_a = math.sin(angle)
+            
+            t_values = []
+            if cos_a > 0:
+                t_values.append((WIDTH - margin - cx) / cos_a)
+            elif cos_a < 0:
+                t_values.append((margin - cx) / cos_a)
+            if sin_a > 0:
+                t_values.append((HEIGHT - margin - cy) / sin_a)
+            elif sin_a < 0:
+                t_values.append((margin - cy) / sin_a)
+            
+            t = min([t for t in t_values if t > 0])
+            px = cx + t * cos_a
+            py = cy + t * sin_a
+            
+            size = 15
+            tip_x = px + math.cos(angle) * size
+            tip_y = py + math.sin(angle) * size
+            left_angle = angle + math.pi * 0.7
+            right_angle = angle - math.pi * 0.7
+            left_x = px + math.cos(left_angle) * size * 0.6
+            left_y = py + math.sin(left_angle) * size * 0.6
+            right_x = px + math.cos(right_angle) * size * 0.6
+            right_y = py + math.sin(right_angle) * size * 0.6
+            
+            points = [(tip_x, tip_y), (left_x, left_y), (right_x, right_y)]
+            pygame.draw.polygon(screen, wp.color, points)
+            pygame.draw.polygon(screen, (255, 255, 255), points, 1)    
+            
     def draw_on_map(self, screen, world_to_screen, is_visible):
         """Рисует маркер на карте"""
         if self.waypoint:

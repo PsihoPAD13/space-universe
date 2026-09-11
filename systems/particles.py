@@ -42,31 +42,21 @@ class Particle:
         if self.size < 0.5:
             self.size = 0.5
     
-    def draw(self, screen, camera_x=0, camera_y=0):
+    def draw(self, screen, camera):
         if not self.alive:
             return
         
-        screen_x = self.x - camera_x
-        screen_y = self.y - camera_y
+        screen_x, screen_y = camera.world_to_screen(self.x, self.y)
+        size = max(1, int(self.size * camera.zoom))
         
-        # Проверка видимости
         if -10 < screen_x < WIDTH + 10 and -10 < screen_y < HEIGHT + 10:
-            # Прозрачность зависит от времени жизни
             alpha = int(255 * (self.lifetime / self.max_lifetime))
             
-            # Создаем поверхность с прозрачностью
-            size = max(1, int(self.size))
             surf = pygame.Surface((size * 2, size * 2), pygame.SRCALPHA)
-            
-            # Цвет с прозрачностью
             color_with_alpha = (self.color[0], self.color[1], self.color[2], alpha)
-            
-            # Рисуем круг
             pygame.draw.circle(surf, color_with_alpha, (size, size), size)
             
-            # Блик для ярких частиц
             if self.color[0] > 200 or self.color[1] > 200 or self.color[2] > 200:
-                # Белый центр для ярких частиц
                 pygame.draw.circle(surf, (255, 255, 255, alpha // 3), (size, size), size // 3)
             
             screen.blit(surf, (int(screen_x - size), int(screen_y - size)))
@@ -165,10 +155,9 @@ class ParticleSystem:
             if not particle.alive:
                 self.particles.remove(particle)
     
-    def draw(self, screen, camera_x=0, camera_y=0):
-        """Рисует все частицы"""
+    def draw(self, screen, camera):
         for particle in self.particles:
-            particle.draw(screen, camera_x, camera_y)
+            particle.draw(screen, camera)
     
     def clear(self):
         """Очищает все частицы"""

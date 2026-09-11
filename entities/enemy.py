@@ -1,39 +1,72 @@
-# enemy.py
+# entities/enemy.py
 import math
 import random
 import pygame
-from settings import (
-    ENEMY_RADIUS, ENEMY_BASE_SPEED, ENEMY_MAX_HEALTH,
-    ENEMY_SHOOT_DELAY_MIN, ENEMY_SHOOT_DELAY_MAX,
-    ENEMY_BULLET_SPEED, WIDTH, HEIGHT,
-    RED, GREEN, CHUNK_SIZE  
-)
+from settings import *
 from entities.bullet import Bullet
-from utils import draw_health_bar, distance, wrap_position
-from entities.enemy_types import ENEMY_TYPES
+from utils import draw_health_bar, distance
+
 
 class Enemy:
-    def __init__(self, x, y, enemy_type='scout', difficulty_multiplier=1.0):
-        type_data = ENEMY_TYPES.get(enemy_type, ENEMY_TYPES['scout'])
-        
+    def __init__(self, x, y, enemy_type='scout', sprite_manager=None, 
+             difficulty_multiplier=1.0, base_color=None):
         self.x = x
         self.y = y
         self.enemy_type = enemy_type
-        self.radius = type_data['radius']
+        self.sprite_manager = sprite_manager
         
-        # Применяем сложность к здоровью
-        self.health = int(type_data['health'] * difficulty_multiplier)
-        self.max_health = int(type_data['max_health'] * difficulty_multiplier)
+        # ===== ЗАГРУЖАЕМ ДАННЫЕ ИЗ JSON =====
+        data = None
+        if sprite_manager:
+            data = sprite_manager.get_sprite_data('enemies', enemy_type)
         
-        self.speed = type_data['speed'] * (1 + (difficulty_multiplier - 1) * 0.2)
-        self.color = type_data['color']
-        self.behavior = type_data['behavior']
-        self.shoot_delay = int(type_data['shoot_delay'] / difficulty_multiplier)
-        self.score_value = int(type_data['score'] * difficulty_multiplier)
+        if not data:
+            # Fallback
+            data = {
+                'size': [64, 64],
+                'stats': {'hp': 2, 'speed': 3.0, 'behavior': 'chase', 'score': 10}
+            }
         
+        stats = data.get('stats', {})
+        
+        # ===== СТАТЫ =====
+        self.radius = data.get('size', [64, 64])[0] // 2
+        self.health = int(stats.get('hp', 2) * difficulty_multiplier)
+        self.max_health = self.health
+        self.speed = stats.get('speed', 3.0)
+        self.behavior = stats.get('behavior', 'chase')
+        self.score_value = stats.get('score', 10)
+        
+        # Стрельба (по умолчанию)
+        self.can_shoot = stats.get('can_shoot', True)
+        self.shoot_delay = stats.get('shoot_delay', 60)
+        self.bullet_speed = stats.get('bullet_speed', 5)
+        self.bullet_type = stats.get('bullet_type', 'forward')
         self.shoot_cooldown = random.randint(0, self.shoot_delay)
         
-        # Начальное направление
+        # ===== ЦВЕТ (ОТ БАЗЫ) =====
+        if base_color is None:
+            base_color = (255, 255, 255)  # Белый по умолчанию
+        self.color = base_color
+    
+        # ===== КАДРЫ КРЕНА С ЦВЕТОМ =====
+        self.rotation_frames = []
+        self.current_frame = 0
+        self.bank_angle = 0
+        self.prev_angle = 0  # <-- ДОБАВИТЬ
+        if sprite_manager:
+            # Получаем перекрашенные кадры
+            colored_frames = sprite_manager.get_colored_frames(enemy_type, base_color)
+            if colored_frames:
+                self.rotation_frames = colored_frames
+                print(f"[ENEMY] {enemy_type}: {len(colored_frames)} кадров, цвет {base_color}")
+            else:
+                # Fallback — оригинальные кадры
+                frames = sprite_manager.get(f"{enemy_type}_bank_frames")
+                if frames:
+                    self.rotation_frames = frames
+                
+        # ===== ФИЗИКА =====
         angle = random.uniform(0, 2 * math.pi)
         self.speed_x = math.cos(angle) * self.speed * 0.5
         self.speed_y = math.sin(angle) * self.speed * 0.5
@@ -50,7 +83,8 @@ class Enemy:
         self.shoot_timer = 0
     
     def update(self, player_x, player_y):
-        # Обновляем в зависимости от поведения
+        """Обновление врага"""
+        # Поведение
         if self.behavior == 'chase':
             self._update_chase(player_x, player_y)
         elif self.behavior == 'stationary':
@@ -60,12 +94,31 @@ class Enemy:
         elif self.behavior == 'orbit':
             self._update_orbit(player_x, player_y)
         
-        # Телепортация через края
-        # wrap_position(self)
-        
         # Кулдаун стрельбы
         if self.shoot_cooldown > 0:
             self.shoot_cooldown -= 1
+        
+        # ===== АНИМАЦИЯ КРЕНА =====
+        current_angle = math.degrees(math.atan2(self.speed_y, self.speed_x))
+        angle_diff = current_angle - self.prev_angle
+
+        # Нормализуем разницу (-180..180)
+        if angle_diff > 180:
+            angle_diff -= 360
+        elif angle_diff < -180:
+            angle_diff += 360
+
+        # Крен от резкого поворота
+        self.bank_angle += angle_diff * 0.5
+        self.bank_angle = max(-15, min(15, self.bank_angle))
+
+        # Затухание
+        self.bank_angle *= 0.99
+        if abs(self.bank_angle) < 0.1:
+            self.bank_angle = 0
+
+        self.prev_angle = current_angle
+        self.current_frame = int(abs(self.bank_angle))            
     
     def _update_chase(self, player_x, player_y):
         """Преследование игрока"""
@@ -74,12 +127,10 @@ class Enemy:
         dist = math.sqrt(dx**2 + dy**2)
         
         if dist > 0:
-            # Чем дальше, тем сильнее ускорение
             acceleration = 0.05 + 0.02 * (dist / 500)
             self.speed_x += (dx / dist) * min(acceleration, 0.1)
             self.speed_y += (dy / dist) * min(acceleration, 0.1)
             
-            # Ограничиваем скорость
             speed = math.sqrt(self.speed_x**2 + self.speed_y**2)
             if speed > self.speed:
                 self.speed_x = (self.speed_x / speed) * self.speed
@@ -89,12 +140,11 @@ class Enemy:
         self.y += self.speed_y
     
     def _update_stationary(self, player_x, player_y):
-        """Стоит на месте и стреляет"""
-        # Очень медленное движение (дрейф)
+        """Стоит на месте"""
         self.x += self.speed_x * 0.02
         self.y += self.speed_y * 0.02
         
-        # Если уплыл далеко - телепортируем к игроку
+        # Телепорт если далеко
         dx = player_x - self.x
         dy = player_y - self.y
         if math.sqrt(dx**2 + dy**2) > 600:
@@ -102,13 +152,12 @@ class Enemy:
             self.y = player_y + dy * 0.3
     
     def _update_kamikaze(self, player_x, player_y):
-        """Летит к игроку и взрывается при приближении"""
+        """Летит к игроку и взрывается"""
         dx = player_x - self.x
         dy = player_y - self.y
         dist = math.sqrt(dx**2 + dy**2)
         
         if dist > 0:
-            # Ускоряется к игроку
             acceleration = 0.1
             self.speed_x += (dx / dist) * acceleration
             self.speed_y += (dy / dist) * acceleration
@@ -121,7 +170,6 @@ class Enemy:
         self.x += self.speed_x
         self.y += self.speed_y
         
-        # Проверка на взрыв
         if dist < self.explosion_radius and not self.is_exploding:
             self.is_exploding = True
     
@@ -147,160 +195,99 @@ class Enemy:
         
         self.x += self.speed_x
         self.y += self.speed_y
-    
+                
     def shoot(self, enemy_bullets, player_x, player_y):
-        """Стрельба"""
+        if not self.can_shoot:
+            return
+        
         if self.shoot_cooldown > 0:
             return
         
         if self.behavior == 'kamikaze':
             return
         
-        if self.behavior == 'stationary':
-            self.shoot_cooldown = self.shoot_delay // 2
-        else:
-            self.shoot_cooldown = self.shoot_delay
+        self.shoot_cooldown = self.shoot_delay
         
-        # ===== РАСЧЁТ НАПРАВЛЕНИЯ (без телепортации) =====
-        dx = player_x - self.x
-        dy = player_y - self.y
+        # Угол спрайта
+        sprite_rad = math.atan2(self.speed_y, self.speed_x)
         
-        # Убираем телепортацию — в бесконечном мире она не нужна
-        # if abs(dx) > WORLD_WIDTH / 2:
-        #     dx = WORLD_WIDTH - abs(dx)
-        #     dx = -dx if self.x > player_x else dx
-        # if abs(dy) > WORLD_HEIGHT / 2:
-        #     dy = WORLD_HEIGHT - abs(dy)
-        #     dy = -dy if self.y > player_y else dy
+        # Позиция дула
+        barrel_length = self.radius
+        bullet_x = self.x + math.cos(sprite_rad) * barrel_length
+        bullet_y = self.y + math.sin(sprite_rad) * barrel_length
         
-        dist = math.sqrt(dx**2 + dy**2)
-        if dist > 0:
-            bullet_speed = ENEMY_BULLET_SPEED
-            if self.behavior == 'sniper':
-                bullet_speed = ENEMY_BULLET_SPEED * 1.5
-            elif self.behavior == 'tank':
-                bullet_speed = ENEMY_BULLET_SPEED * 0.7
-            
-            enemy_bullets.append(Bullet(
-                self.x,
-                self.y,
-                (dx / dist) * bullet_speed,
-                (dy / dist) * bullet_speed
-            ))
-    
-    def draw(self, screen, camera_x=0, camera_y=0, player_x=0, player_y=0):
-        """Рисует врага с поворотом"""
-        screen_x = self.x - camera_x
-        screen_y = self.y - camera_y
-        
-        if screen_x < -50 or screen_x > WIDTH + 50 or screen_y < -50 or screen_y > HEIGHT + 50:
-            return
-        
-        # ===== ВЫЧИСЛЯЕМ УГОЛ ПОВОРОТА =====
-        angle = 0
-        
-        # Для стационарных — поворачиваем к игроку
-        if self.behavior in ['stationary']:
+        # ===== ТИП ПУЛИ =====
+        if self.bullet_type == 'forward':
+            # Летит вперёд (по направлению спрайта)
+            speed_x = math.cos(sprite_rad) * self.bullet_speed
+            speed_y = math.sin(sprite_rad) * self.bullet_speed
+        else:  # target
+            # Летит на игрока
             dx = player_x - self.x
             dy = player_y - self.y
-            if dx != 0 or dy != 0:
-                angle = math.atan2(dy, dx)
-        # Для движущихся — поворачиваем по направлению движения
-        else:
+            dist = math.sqrt(dx**2 + dy**2)
+            if dist > 0:
+                speed_x = (dx / dist) * self.bullet_speed
+                speed_y = (dy / dist) * self.bullet_speed
+            else:
+                return
+        
+        enemy_bullets.append(Bullet(bullet_x, bullet_y, speed_x, speed_y))
+    
+    def draw(self, screen, camera, player_x=0, player_y=0):
+        """Рисует врага с учётом зума"""
+        screen_x, screen_y = camera.world_to_screen(self.x, self.y)
+        
+        if screen_x < -200 or screen_x > WIDTH + 200 or \
+           screen_y < -200 or screen_y > HEIGHT + 200:
+            return
+        
+        # Спрайт с креном
+        if self.rotation_frames:
+            frame_index = int(abs(self.bank_angle)) % len(self.rotation_frames)
+            frame = self.rotation_frames[frame_index]
+            
+            if self.bank_angle < 0:
+                frame = pygame.transform.flip(frame, False, True)
+            
+            # Поворот по движению
             speed = math.sqrt(self.speed_x**2 + self.speed_y**2)
-            if speed > 0.5:
-                angle = math.atan2(self.speed_y, self.speed_x)
-        
-        # Получаем вершины
-        type_data = ENEMY_TYPES.get(self.enemy_type, {})
-        vertices = type_data.get('vertices', [])
-        
-        if not vertices:
-            vertices = [(0, -self.radius), (self.radius, 0), (0, self.radius), (-self.radius, 0)]
-        
-        # Поворачиваем вершины
-        rotated_points = []
-        cos_a = math.cos(angle)
-        sin_a = math.sin(angle)
-        
-        for vx, vy in vertices:
-            rx = vx * cos_a - vy * sin_a
-            ry = vx * sin_a + vy * cos_a
-            px = screen_x + rx
-            py = screen_y + ry
-            rotated_points.append((px, py))
-        
-        # Рисуем
-        pygame.draw.polygon(screen, self.color, rotated_points, 2)
-        pygame.draw.polygon(screen, self.color, rotated_points, 1)
+            angle = math.degrees(math.atan2(self.speed_y, self.speed_x)) if speed > 0.5 else 0
+            
+            # Масштабируем
+            w = max(1, int(frame.get_width() * camera.zoom))
+            h = max(1, int(frame.get_height() * camera.zoom))
+            scaled = pygame.transform.scale(frame, (w, h))
+            
+            rotated = pygame.transform.rotate(scaled, -angle)
+            rect = rotated.get_rect(center=(screen_x, screen_y))
+            screen.blit(rotated, rect)
+        else:
+            scaled_radius = max(1, int(self.radius * camera.zoom))
+            pygame.draw.circle(screen, (255, 0, 255), (int(screen_x), int(screen_y)), scaled_radius)
         
         # Полоса здоровья
         if self.max_health > 1:
-            draw_health_bar(screen, screen_x, screen_y - self.radius - 8, 
-                           self.health, self.max_health, width=30)
+            draw_health_bar(screen, screen_x, screen_y - self.radius * camera.zoom - 8,
+                           self.health, self.max_health,
+                           width=int(30 * camera.zoom), height=max(2, int(5 * camera.zoom)))
         
         # Взрыв камикадзе
         if self.is_exploding:
-            pygame.draw.circle(screen, (255, 200, 50), 
-                             (int(screen_x), int(screen_y)), 
-                             self.explosion_radius, 3)
+            pygame.draw.circle(screen, (255, 200, 50),
+                             (int(screen_x), int(screen_y)),
+                             int(self.explosion_radius * camera.zoom), 3)  
                              
     def take_damage(self, damage=1):
-        """Получение урона"""
         self.health -= damage
         return self.health <= 0
     
-    def is_dead(self):
-        return self.health <= 0
-    
     def destroy(self, particle_system):
-        """Уничтожение врага со взрывом"""
-        # Взрыв с цветами врага
-        colors = [
-            self.color,
-            (255, 200, 50),
-            (255, 255, 255)
-        ]
-        
-        count = 20 if self.radius < 20 else 35
-        
-        particle_system.spawn_explosion(
-            self.x, self.y,
-            count=count,
-            speed=5,
-            colors=colors
-        )
-        
-        # Дополнительные искры для камикадзе
-        if self.behavior == 'kamikaze':
+        """Взрыв"""
+        if particle_system:
             particle_system.spawn_explosion(
                 self.x, self.y,
-                count=50,
-                speed=8,
-                colors=[(255, 200, 50), (255, 100, 50), (255, 255, 255)]
+                count=20,
+                speed=5,
+                colors=[(255, 100, 50), (255, 200, 50), (255, 255, 255)]
             )
-
-    def get_vertices(self):
-        """Возвращает вершины врага для полигональной коллизии"""
-        from entities.enemy_types import ENEMY_TYPES
-        
-        type_data = ENEMY_TYPES.get(self.enemy_type, {})
-        vertices = type_data.get('vertices', [
-            (0, -self.radius), (self.radius, 0), (0, self.radius), (-self.radius, 0)
-        ])
-        
-        # Поворачиваем вершины
-        angle = 0
-        speed = math.sqrt(self.speed_x**2 + self.speed_y**2)
-        if speed > 0.5:
-            angle = math.atan2(self.speed_y, self.speed_x)
-        
-        cos_a = math.cos(angle)
-        sin_a = math.sin(angle)
-        
-        rotated = []
-        for vx, vy in vertices:
-            rx = self.x + vx * cos_a - vy * sin_a
-            ry = self.y + vx * sin_a + vy * cos_a
-            rotated.append((rx, ry))
-        return rotated

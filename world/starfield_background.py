@@ -4,6 +4,7 @@ import random
 import math
 from settings import WIDTH, HEIGHT, STAR_LAYERS, STAR_SPAWN_RADIUS_MULTIPLIER
 
+
 class StarLayer:
     def __init__(self, count, speed, min_size, max_size, min_bright, max_bright, color_chance):
         self.count = count
@@ -66,16 +67,15 @@ class StarLayer:
                 star['x'] = player_x + math.cos(angle) * new_dist
                 star['y'] = player_y + math.sin(angle) * new_dist
     
-    def draw(self, screen, camera_x, camera_y, warp_factor=1.0):
+    def draw(self, screen, camera, warp_factor=1.0):
+        """Рисует звёзды с учётом зума"""
         current_time = pygame.time.get_ticks() * 0.001
         
         for star in self.stars:
-            screen_x = star['x'] - camera_x
-            screen_y = star['y'] - camera_y
+            screen_x, screen_y = camera.world_to_screen(star['x'], star['y'])
             
             if -10 < screen_x < WIDTH + 10 and -10 < screen_y < HEIGHT + 10:
                 twinkle = 0.7 + 0.3 * math.sin(current_time * 0.5 + star['phase'])
-                brightness = int(star['brightness'] * twinkle)
                 
                 color = (
                     min(255, int(star['color'][0] * twinkle * min(warp_factor, 2.5) / 1.5)),
@@ -83,14 +83,20 @@ class StarLayer:
                     min(255, int(star['color'][2] * twinkle * min(warp_factor, 2.5) / 1.5))
                 )
                 
-                # Шлейф при варпе
+                # ===== ШЛЕЙФ ПРИ ВАРПЕ =====
                 if warp_factor > 1.2 and star['size'] >= 1:
                     trail_length = int((warp_factor - 1.0) * 8) + 2
                     trail_length = min(trail_length, 20)
                     
-                    dx = star['x'] - star['_prev_x']
-                    dy = star['y'] - star['_prev_y']
+                    # Направление шлейфа (в экранных координатах)
+                    prev_screen_x, prev_screen_y = camera.world_to_screen(
+                        star['_prev_x'], star['_prev_y']
+                    )
+                    
+                    dx = screen_x - prev_screen_x
+                    dy = screen_y - prev_screen_y
                     dist = math.sqrt(dx**2 + dy**2)
+                    
                     if dist > 0:
                         dx /= dist
                         dy /= dist
@@ -104,7 +110,7 @@ class StarLayer:
                         trail_x = screen_x - dx * i * 2
                         trail_y = screen_y - dy * i * 2
                         
-                        trail_size = max(1, star['size'] * (1 - i / trail_length * 0.7))
+                        trail_size = max(1, int(star['size'] * (1 - i / trail_length * 0.7) * camera.zoom))
                         
                         trail_color = (
                             min(255, int(color[0] * 0.5)),
@@ -113,12 +119,13 @@ class StarLayer:
                         )
                         
                         surf = pygame.Surface((trail_size * 2 + 2, trail_size * 2 + 2), pygame.SRCALPHA)
-                        pygame.draw.circle(surf, (*trail_color, alpha), 
+                        pygame.draw.circle(surf, (*trail_color, alpha),
                                          (trail_size + 1, trail_size + 1), trail_size)
                         screen.blit(surf, (int(trail_x - trail_size - 1), int(trail_y - trail_size - 1)))
                 
-                size = int(star['size'] * min(warp_factor, 1.5))
-                pygame.draw.circle(screen, color, (int(screen_x), int(screen_y)), max(1, size))
+                # ===== САМА ЗВЕЗДА =====
+                size = max(1, int(star['size'] * min(warp_factor, 1.5) * camera.zoom))
+                pygame.draw.circle(screen, color, (int(screen_x), int(screen_y)), size)
 
 
 class BackgroundStars:
@@ -145,6 +152,7 @@ class BackgroundStars:
             speed_multiplier = 1.0 + (self.warp_factor - 1.0) * 0.3
             layer.update(player_x, player_y, offset_x * speed_multiplier, offset_y * speed_multiplier)
     
-    def draw(self, screen, camera_x, camera_y):
+    def draw(self, screen, camera):
+        """Рисует все слои звёзд с зумом"""
         for layer in self.layers:
-            layer.draw(screen, camera_x, camera_y, self.warp_factor)
+            layer.draw(screen, camera, self.warp_factor)

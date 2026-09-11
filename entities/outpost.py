@@ -97,74 +97,49 @@ class Outpost:
                     # Прогресс обновляется извне
                     pass
     
-    def draw(self, screen, camera_x=0, camera_y=0):
+    def draw(self, screen, camera):
+        """Рисует аванпост с учётом зума"""
         if not self.alive:
             return
         
-        screen_x = self.x - camera_x
-        screen_y = self.y - camera_y
+        screen_x, screen_y = camera.world_to_screen(self.x, self.y)
+        radius = int(self.radius * camera.zoom)
         
-        if screen_x < -self.radius or screen_x > WIDTH + self.radius or \
-           screen_y < -self.radius or screen_y > HEIGHT + self.radius:
+        if screen_x < -radius or screen_x > WIDTH + radius or \
+           screen_y < -radius or screen_y > HEIGHT + radius:
             return
         
         pulse_scale = 1 + 0.05 * math.sin(self.pulse)
-        radius = int(self.radius * pulse_scale)
+        radius = int(radius * pulse_scale)
         
-        # ===== СВЕЧЕНИЕ =====
+        # Свечение
         glow = pygame.Surface((radius * 3, radius * 3), pygame.SRCALPHA)
         glow_color = (self.color[0], self.color[1], self.color[2], 40)
         pygame.draw.circle(glow, glow_color, (radius * 1.5, radius * 1.5), radius * 1.5)
         screen.blit(glow, (int(screen_x - radius * 1.5), int(screen_y - radius * 1.5)))
         
-        # ===== ВНЕШНЕЕ КОЛЬЦО =====
-        pygame.draw.circle(screen, self.color, 
-                         (int(screen_x), int(screen_y)), radius, 3)
-        pygame.draw.circle(screen, (100, 100, 150), 
-                         (int(screen_x), int(screen_y)), radius, 1)
+        # Внешнее кольцо
+        pygame.draw.circle(screen, self.color, (int(screen_x), int(screen_y)), radius, 3)
         
-        # ===== ВНУТРЕННЕЕ КОЛЬЦО (вращающееся) =====
+        # Внутреннее кольцо
         rot_radius = int(radius * 0.7)
         for i in range(4):
             angle = self.rotation + math.pi / 2 * i
             dx = math.cos(angle) * rot_radius
             dy = math.sin(angle) * rot_radius
-            pygame.draw.circle(screen, (150, 150, 200), 
-                             (int(screen_x + dx), int(screen_y + dy)), 4)
+            pygame.draw.circle(screen, (150, 150, 200),
+                             (int(screen_x + dx), int(screen_y + dy)), max(2, int(4 * camera.zoom)))
         
-        # ===== ЦЕНТР =====
-        pygame.draw.circle(screen, self.color, 
-                         (int(screen_x), int(screen_y)), int(radius * 0.2), 2)
-        pygame.draw.circle(screen, (50, 50, 80), 
-                         (int(screen_x), int(screen_y)), int(radius * 0.15))
+        # Центр
+        pygame.draw.circle(screen, self.color, (int(screen_x), int(screen_y)), int(radius * 0.2), 2)
         
-        # ===== ИКОНКА ТИПА =====
-        font = pygame.font.Font(None, 24)
-        icons = {
-            'trade': '$',
-            'mission': '!',
-            'repair': '+',
-        }
+        # Иконка
+        icon_font = pygame.font.Font(None, int(24 * camera.zoom))
+        icons = {'trade': '$', 'mission': '!', 'repair': '+'}
         icon = icons.get(self.outpost_type, '?')
-        text = font.render(icon, True, (255, 255, 255))
-        text_rect = text.get_rect(center=(int(screen_x), int(screen_y)))
-        screen.blit(text, text_rect)
-        
-        # ===== НАЗВАНИЕ =====
-        font_small = pygame.font.Font(None, 14)
-        names = {
-            'trade': 'ТОРГОВЫЙ ПОСТ',
-            'mission': 'МИССИЯ',
-            'repair': 'РЕМОНТНАЯ СТАНЦИЯ',
-        }
-        name = names.get(self.outpost_type, 'СТАНЦИЯ')
-        text = font_small.render(name, True, (150, 150, 200))
-        text_rect = text.get_rect(center=(int(screen_x), int(screen_y + radius + 18)))
-        screen.blit(text, text_rect)
-        
-        # ===== РАССТОЯНИЕ =====
-        # (будет отображаться в HUD)
-    
+        text = icon_font.render(icon, True, (255, 255, 255))
+        screen.blit(text, text.get_rect(center=(int(screen_x), int(screen_y))))
+
     def interact(self, player, game):
         """Взаимодействие с аванпостом"""
         if self.outpost_type == 'trade':

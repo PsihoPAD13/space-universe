@@ -53,8 +53,8 @@ class EnemyManager:
         
         return weights
     
-    def spawn_enemy(self, x, y, enemy_type=None, difficulty_multiplier=1.0):
-        """Создаёт врага указанного типа"""
+    def spawn_enemy(self, x, y, enemy_type=None, sprite_manager=None, 
+                    difficulty_multiplier=1.0, base_color=None):
         if enemy_type is None:
             enemy_type = self.get_random_type()
         
@@ -62,8 +62,9 @@ class EnemyManager:
             print(f"[ENEMY_MANAGER] Ошибка: тип '{enemy_type}' не найден")
             return None
         
-        enemy = Enemy(x, y, enemy_type, difficulty_multiplier)
-        return enemy
+        enemy = Enemy(x, y, enemy_type, sprite_manager, 
+                      difficulty_multiplier, base_color)
+        return enemy    
     
     def get_random_type(self, current_enemies=None):
         """Возвращает случайный тип врага с учётом весов и лимитов"""

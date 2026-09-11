@@ -2,14 +2,14 @@
 import pygame
 
 # ===== РАЗМЕР ЭКРАНА =====
-WIDTH, HEIGHT = 900, 700
+WIDTH, HEIGHT = 1280, 720
 FPS = 60
 
 # ===== БЕСКОНЕЧНЫЙ МИР =====
 # Мир не имеет границ!
 
 # ===== РАЗМЕР ЧАНКА =====
-CHUNK_SIZE = 8192  # пикселей (8к)
+CHUNK_SIZE = 16384  # пикселей (8к)
 
 # ===== РАЗМЕР РЕГИОНА =====
 REGION_CHUNKS = 16  # 16x16 чанков в регионе
@@ -62,7 +62,7 @@ BULLET_LIFE = 60
 BULLET_RADIUS = 4
 
 # ===== НАСТРОЙКИ ВРАГОВ =====
-ENEMY_RADIUS = 20
+ENEMY_RADIUS = 40
 ENEMY_BASE_SPEED = 1.5
 ENEMY_MAX_HEALTH = 3
 ENEMY_SHOOT_DELAY_MIN = 30

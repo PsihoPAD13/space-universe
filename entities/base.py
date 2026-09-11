@@ -19,7 +19,7 @@ class EnemyBase:
         self.base_x = x
         self.base_y = y
         self.base_type = base_type
-        self.radius = 45
+        self.radius = 80
         self.health = 100
         self.max_health = 100
         self.alive = True
@@ -60,14 +60,23 @@ class EnemyBase:
         self.respawn_delay = 300
         self.respawn_timer = 0
         
-        # Цвета
+        # Цвет базы
         self.colors = {
             'standard': (255, 50, 50),
             'strong': (255, 50, 200),
             'fast': (255, 200, 50),
             'swarm': (200, 50, 255),
         }
-        self.color = self.colors.get(base_type, (255, 50, 50))
+        self.color = self.colors.get(base_type, (255, 50, 50))  # <-- ДОБАВИТЬ
+        
+        # Цвет врагов (для спавна)
+        self.base_colors = {
+            'standard': (255, 100, 100),
+            'strong': (200, 100, 255),
+            'fast': (255, 200, 100),
+            'swarm': (255, 100, 200),
+        }
+        self.spawn_color = self.base_colors.get(base_type, (255, 255, 255))
         
         # Типы врагов
         self.spawn_types = {
@@ -145,7 +154,7 @@ class EnemyBase:
                     spawn_x = self.x + math.cos(angle) * distance
                     spawn_y = self.y + math.sin(angle) * distance
                     
-                    enemy = spawn_func(spawn_x, spawn_y, enemy_type)
+                    enemy = spawn_func(spawn_x, spawn_y, enemy_type, self.spawn_color)
                     if enemy:
                         enemy.base_id = base_id
                         enemies.append(enemy)
@@ -294,16 +303,17 @@ class EnemyBase:
             
             return True
         return False
-        
-    def draw(self, screen, camera_x=0, camera_y=0):
+            
+    def draw(self, screen, camera):
+        """Рисует базу с учётом зума"""
         if not self.alive:
             return
         
-        screen_x = self.x - camera_x
-        screen_y = self.y - camera_y
+        screen_x, screen_y = camera.world_to_screen(self.x, self.y)
+        scaled_radius = self.radius * camera.zoom
         
-        if screen_x < -self.radius or screen_x > WIDTH + self.radius or \
-           screen_y < -self.radius or screen_y > HEIGHT + self.radius:
+        if screen_x < -scaled_radius - 50 or screen_x > WIDTH + scaled_radius + 50 or \
+           screen_y < -scaled_radius - 50 or screen_y > HEIGHT + scaled_radius + 50:
             return
         
         if self.hit_flash > 0 and self.hit_flash % 2 == 0:
@@ -312,44 +322,29 @@ class EnemyBase:
             color = self.color
         
         pulse_scale = 1 + 0.05 * math.sin(self.pulse)
-        base_radius = int(self.radius * pulse_scale)
+        base_radius = int(scaled_radius * pulse_scale)
         
-        # Рисуем связи с дочерними базами
-        if self.children:
-            for child in self.children:
-                if child.alive:
-                    child_screen_x = child.x - camera_x
-                    child_screen_y = child.y - camera_y
-                    
-                    # Энергетическая линия
-                    pygame.draw.line(screen, (60, 60, 120), 
-                                   (screen_x, screen_y), 
-                                   (child_screen_x, child_screen_y), 2)
-                    
-                    # Эффект энергии (бегущая точка)
-                    t = (pygame.time.get_ticks() % 1000) / 1000
-                    energy_x = screen_x + (child_screen_x - screen_x) * t
-                    energy_y = screen_y + (child_screen_y - screen_y) * t
-                    pygame.draw.circle(screen, (150, 150, 255), 
-                                     (int(energy_x), int(energy_y)), 4)
-                                     
-        # ===== 1. СОЕДИНИТЕЛЬНЫЕ ЛИНИИ =====
+        # ===== СОЕДИНИТЕЛЬНЫЕ ЛИНИИ =====
         if self.connected and self.parent:
-            # Линия к родителю
-            parent_screen_x = self.parent.x - camera_x
-            parent_screen_y = self.parent.y - camera_y
-            pygame.draw.line(screen, (60, 60, 100), 
-                           (screen_x, screen_y), 
+            parent_screen_x, parent_screen_y = camera.world_to_screen(self.parent.x, self.parent.y)
+            pygame.draw.line(screen, (60, 60, 100),
+                           (screen_x, screen_y),
                            (parent_screen_x, parent_screen_y), 3)
             
-            # Эффект энергии на линии
             t = (pygame.time.get_ticks() % 1000) / 1000
             energy_x = screen_x + (parent_screen_x - screen_x) * t
             energy_y = screen_y + (parent_screen_y - screen_y) * t
-            pygame.draw.circle(screen, (150, 150, 255), 
-                             (int(energy_x), int(energy_y)), 4)
+            pygame.draw.circle(screen, (150, 150, 255), (int(energy_x), int(energy_y)), 4)
         
-        # ===== 2. ВНЕШНИЙ ГЕКСАГОН =====
+        if self.children:
+            for child in self.children:
+                if child.alive:
+                    child_screen_x, child_screen_y = camera.world_to_screen(child.x, child.y)
+                    pygame.draw.line(screen, (60, 60, 120),
+                                   (screen_x, screen_y),
+                                   (child_screen_x, child_screen_y), 2)
+        
+        # ===== ВНЕШНИЙ ГЕКСАГОН =====
         hex_points = []
         for i in range(6):
             angle = math.radians(60 * i - 30 + self.module_angle * 20)
@@ -357,15 +352,10 @@ class EnemyBase:
             py = screen_y + math.sin(angle) * base_radius
             hex_points.append((px, py))
         
-        # Тень гексагона
-        shadow_points = [(px + 2, py + 2) for px, py in hex_points]
-        pygame.draw.polygon(screen, (20, 20, 40), shadow_points)
-        
-        # Основной гексагон
         pygame.draw.polygon(screen, color, hex_points, 3)
         pygame.draw.polygon(screen, (100, 100, 150), hex_points, 1)
         
-        # ===== 3. ВНУТРЕННИЕ МОДУЛИ =====
+        # ===== ВНУТРЕННИЕ МОДУЛИ =====
         module_radius = int(base_radius * 0.22)
         for i in range(6):
             angle = math.radians(60 * i + self.module_angle * 20)
@@ -385,21 +375,12 @@ class EnemyBase:
                 mod_color = (40, 40, 60)
             
             pygame.draw.polygon(screen, mod_color, mod_points, 2)
-            pygame.draw.polygon(screen, (80, 80, 120), mod_points, 1)
         
-        # ===== 4. ЦЕНТР =====
+        # ===== ЦЕНТР =====
         pygame.draw.circle(screen, color, (int(screen_x), int(screen_y)), int(base_radius * 0.2), 2)
         pygame.draw.circle(screen, (50, 50, 80), (int(screen_x), int(screen_y)), int(base_radius * 0.15))
         
-        cross_size = int(base_radius * 0.15)
-        pygame.draw.line(screen, color, 
-                       (screen_x - cross_size, screen_y), 
-                       (screen_x + cross_size, screen_y), 2)
-        pygame.draw.line(screen, color, 
-                       (screen_x, screen_y - cross_size), 
-                       (screen_x, screen_y + cross_size), 2)
-        
-        # ===== 5. ИНДИКАТОР ЗАПАСА ВРАГОВ =====
+        # ===== ИНДИКАТОР ЗАПАСА =====
         for i in range(self.max_enemies):
             angle = -math.pi / 2 + (i / self.max_enemies) * 2 * math.pi
             dot_x = screen_x + math.cos(angle) * (base_radius + 12)
@@ -407,37 +388,19 @@ class EnemyBase:
             
             if i < self.current_enemies:
                 dot_color = (50, 255, 50)
-                dot_size = 4
             else:
                 dot_color = (30, 30, 30)
-                dot_size = 3
             
-            pygame.draw.circle(screen, dot_color, (int(dot_x), int(dot_y)), dot_size)
+            pygame.draw.circle(screen, dot_color, (int(dot_x), int(dot_y)), max(2, int(3 * camera.zoom)))
         
-        # ===== 6. ПОЛОСА ЗДОРОВЬЯ =====
-        bar_width = 50
-        bar_height = 5
+        # ===== HP БАР =====
+        bar_width = int(50 * camera.zoom)
+        bar_height = max(2, int(5 * camera.zoom))
         bar_x = screen_x - bar_width // 2
         bar_y = screen_y - base_radius - 15
         health_percent = self.health / self.max_health
         
         pygame.draw.rect(screen, (40, 0, 0), (bar_x, bar_y, bar_width, bar_height))
-        if health_percent > 0.5:
-            health_color = (0, 255, 50)
-        elif health_percent > 0.25:
-            health_color = (255, 200, 50)
-        else:
-            health_color = (255, 50, 50)
-        pygame.draw.rect(screen, health_color, 
+        pygame.draw.rect(screen, (0, 255, 50),
                         (bar_x, bar_y, int(bar_width * health_percent), bar_height))
-        pygame.draw.rect(screen, (80, 80, 100), (bar_x, bar_y, bar_width, bar_height), 1)
-        
-        # ===== 7. ТИП И РАЗМЕР КОМПЛЕКСА =====
-        font = pygame.font.Font(None, 16)
-        if self.parent:
-            label = f"{self.get_complex_size()}x"
-        else:
-            label = f"{self.base_type[0].upper()}{self.current_enemies}/{self.max_enemies}"
-        text = font.render(label, True, (200, 200, 220))
-        text_rect = text.get_rect(center=(int(screen_x), int(screen_y + base_radius + 25)))
-        screen.blit(text, text_rect)
+                        

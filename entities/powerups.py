@@ -58,38 +58,29 @@ class PowerUp:
         self.y += self.speed * 0.3
         self.current_radius = self.radius + 3 * math.sin(self.pulse)
     
-    def draw(self, screen, camera_x=0, camera_y=0):
-        screen_x = self.x - camera_x
-        screen_y = self.y - camera_y
+    def draw(self, screen, camera):
+        screen_x, screen_y = camera.world_to_screen(self.x, self.y)
+        current_radius = self.current_radius * camera.zoom
         
-        if screen_x < -50 or screen_x > WIDTH + 50 or screen_y < -50 or screen_y > HEIGHT + 50:
+        if screen_x < -50 or screen_x > WIDTH + 50 or \
+           screen_y < -50 or screen_y > HEIGHT + 50:
             return
         
         type_data = self.types.get(self.type, self.types['health'])
         color = type_data['color']
         
-        glow_size = int(self.current_radius * 1.5)
+        glow_size = int(current_radius * 1.5)
         glow = pygame.Surface((glow_size * 2, glow_size * 2), pygame.SRCALPHA)
-        glow_color = (color[0], color[1], color[2], 50)
-        pygame.draw.circle(glow, glow_color, (glow_size, glow_size), glow_size)
+        pygame.draw.circle(glow, (color[0], color[1], color[2], 50), (glow_size, glow_size), glow_size)
         screen.blit(glow, (int(screen_x - glow_size), int(screen_y - glow_size)))
         
-        pygame.draw.circle(screen, color, 
-                          (int(screen_x), int(screen_y)), 
-                          int(self.current_radius), 2)
+        pygame.draw.circle(screen, color, (int(screen_x), int(screen_y)), int(current_radius), 2)
         
-        inner = pygame.Surface((int(self.current_radius * 2), int(self.current_radius * 2)), pygame.SRCALPHA)
-        inner_color = (color[0], color[1], color[2], 80)
-        pygame.draw.circle(inner, inner_color, 
-                          (int(self.current_radius), int(self.current_radius)), 
-                          int(self.current_radius - 2))
-        screen.blit(inner, (int(screen_x - self.current_radius), int(screen_y - self.current_radius)))
-        
-        font = pygame.font.Font(None, 32)
-        symbol = type_data['symbol']
-        text = font.render(symbol, True, WHITE)
-        text_rect = text.get_rect(center=(int(screen_x), int(screen_y)))
-        screen.blit(text, text_rect)
+        # Символ
+        font_size = max(8, int(32 * camera.zoom))
+        font = pygame.font.Font(None, font_size)
+        text = font.render(type_data['symbol'], True, WHITE)
+        screen.blit(text, text.get_rect(center=(int(screen_x), int(screen_y))))
 
 class PowerUpSystem:
     def __init__(self):
@@ -199,9 +190,9 @@ class PowerUpSystem:
         if 'shield' in self.active_effects:
             ship.shield_active = True
     
-    def draw(self, screen, camera_x=0, camera_y=0):
+    def draw(self, screen, camera):
         for powerup in self.powerups:
-            powerup.draw(screen, camera_x, camera_y)
+            powerup.draw(screen, camera)
     
     def clear(self):
         self.powerups.clear()
