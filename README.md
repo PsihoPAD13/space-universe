@@ -4,7 +4,7 @@
 
 [![Python](https://img.shields.io/badge/Python-3.12-blue)](https://www.python.org/)
 [![Pygame](https://img.shields.io/badge/Pygame-2.6.1-green)](https://www.pygame.org/)
-[![Version](https://img.shields.io/badge/Version-0.11.0-blue)](./CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-0.12.0-blue)](./CHANGELOG.md)
 [![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
 
 ---
